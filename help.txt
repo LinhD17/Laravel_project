@@ -1,0 +1,60 @@
+--------Dự án luyện tậo PHP trên framework Laravel ----------------------------------
+
+cú pháp khởi tạo: composer create-project --prefer-dist laravel/laravel:^7.4 mylaravelpro.vn
+
+chạy dự án: php artisan serve 
+
+Hiện tại mình chưa tối ưu đường dẫn http://127.0.0.1:8000, thành http://proj_new.xyz
+
+================Các kiểu Router mà ta hay sử dụng và viết ================
+http://proj_new.xyz/                        Home 
+http://proj_new.xyz/about                   About
+http://proj_new.xyz/category/123            123 là id 
+http://proj_new.xyz/admin/category/edit/12  12 là id của category, id bắt buộc mang kiểu int
+
+================= Mô hình MVC =========================
+MVC      Model      View        Controller 
+
+
+
+===================Xây dựng phần mền quản lý ===============
+Quản lý user      http://proj_new.xyz/admin/user         
+Quản lý slider    http://proj_new.xyz/admin/slider    
+Quản lý category  http://proj_new.xyz/admin/category
+
+Quản lý chi tiết Slider 
+Danh sách slider  http://proj_new.xyz/admin/slider 
+Edit Slider       http://proj_new.xyz/admin/slider/edit/12
+Xoá Slider        http://proj_new.xyz/admin/slider/delete/12
+
+Sau này ta sẽ có nhiều modul như là 
+admin 
+news
+nhansu
+...
+=> như vậy trong view ta cần tạo ra nhiều folder để quản lý từng modul một 
+
+
+==========================Connect DATABASE============================
+config => database.php : nơi thực hiện khai báo thông tin connect 
+*thực hiện điều chỉnh mysql tại connections => 'mysql' => [....]
+tất cả các chỉ số đều trỏ đến env, do đó ta sẽ đến file .env để chỉnh sửa thông tin (nếu cần)
+chủ yếu thực hiện chỉnh sủa các chỉ số sau 
+DB_DATABASE=project_laravel //tên của database đã tạo 
+DB_USERNAME=root
+DB_PASSWORD=       //để trống tức là ko có pass
+
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+Cú pháp tạo ra 1 model mới: php artisan make model TênModel
+=>default: in this case, Eloquent will assume the TênModel model stores records in the tenmodels table. 
+ví dụ: Flight model sẽ tương ứng với "flights" table trong database
+tuy nhiên ta có thể khai báo lại để cho model của ta tương tác được với bảng mà ko cần phải đồng nhất về tên kiểu như trên 
+protected $table = '....'
+
+=================================================================================
+cài debugbar cho project 
+cú pháp: composer require barryvdh/laravel-debugbar --dev
+Sau khi cài đặt xong bên dưới màn hình ứng dụng sẽ hiện ra 1 thanh menu ta có thể mở lên để xem 
+-view: trang hiện tạo có những view nào, tập tin đó nằm ở đâu 
+-route: ta đang ở trang này thì nó tương ứng với route nào, ...

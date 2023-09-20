@@ -19,7 +19,7 @@ class SliderController extends Controller
     public function __construct()
     {
         $this -> model = new MainModel;
-        $this -> params["pagination"]["totalItemsPerPage"] = 1; // hiển thị ra số phần tử trên 1 trang theo yêu cầu của mình chứ ko mặc định
+        $this -> params["pagination"]["totalItemsPerPage"] = 3; // hiển thị ra số phần tử trên 1 trang theo yêu cầu của mình chứ ko mặc định
         View::share('controllerName', $this->controllerName); 
         // cách ghi khác mà ko cần sử dụng use...View bên trên 
         //view()->share('controllerName', $this->controllerName);
@@ -46,14 +46,11 @@ class SliderController extends Controller
         // }
 
         //lấy ra những trạng thái và số phần tử tương ứng với trạng thái đó 
-        $countByStatus = $this -> model -> countItems($this -> params, ['task' => 'admin-count-items']);
-        // echo '<pre style="color: red">';
-        // print_r($countByStatus);
-        // echo '</pre>';
+        $itemsStatusCount = $this -> model -> countItems($this -> params, ['task' => 'admin-count-items-group-by-status']); // [['status', 'count']]
 
         return view($this->pathViewController . 'index', [
             'items' => $items, 
-            'countByStatus' => $countByStatus
+            'itemsStatusCount' => $itemsStatusCount
             //'controllerName' => $this ->controllerName //truyền giá trị $controllerName ra ngoài view 
         ]); // index là action ta đang làm việc 
     }

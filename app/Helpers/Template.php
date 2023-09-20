@@ -4,18 +4,24 @@ use Config;
 
 class Template {
     //function xử lý nếu status > 0 thì hiển thị lên nút All, Active, Inactive
-    public static function showButtonFilter ($countByStatus) {
+    public static function showButtonFilter ($itemsStatusCount) {
         $xhtml = null;
+        $tmplStatus = Config::get('zvn.template.status');
 
-        if(count($countByStatus) > 0) {
-
+        if(count($itemsStatusCount) > 0) {
             //thêm phần tử all vào vị trí đầu mảng 
-            array_unshift($countByStatus, [
-                'count'=> array_sum(array_column($countByStatus, 'count')),
-                'status' => 'All'
+            array_unshift($itemsStatusCount, [
+                'count'=> array_sum(array_column($itemsStatusCount, 'count')),
+                'status' => 'all'
             ]);
+            //duyệt qua $itemsStatusCount này, mỗi lần duyệt qua ta đặt tên cho nó là item
+            foreach ($itemsStatusCount as $item) { //item = [count, status]
+                $statusValue = $item['status']; //active, inactive, block - trạng thái của item 
+                //kiểm tra xem giá trị này có trong khai báo của zvn.php hay không, nếu có thì cứ in ra bình thường, nếu ko có thì cho in ra 1 giá trị default nào đó 
+                $statusValue = array_key_exists($statusValue, $tmplStatus) ? $statusValue : 'default'; 
 
-            foreach ($countByStatus as $value) {
+                $curentTemplateStatus = $tmplStatus[$statusValue]; //sau khi kiểm tra đi cập nhật lại cho $curentTemplateStatus
+
                 $xhtml .= sprintf('
                 <a
                     href="#" type="button"
@@ -24,35 +30,10 @@ class Template {
                     %s
                     <span class="badge bg-white">%s</span>
                 </a>
-                ', $value['status'],$value['count']);
+                ', $curentTemplateStatus['name'],$item['count']);
 
             }
-
         }
-
-        // $xhtml = sprintf('
-        //     <a
-        //         href="?filter_status=all" type="button"
-        //         class="btn btn-primary"
-        //     >
-        //         All 
-        //         <span class="badge bg-white">4</span>
-        //     </a>
-        //     <a 
-        //         href="?filter_status=active"
-        //         type="button" class="btn btn-success"
-        //     >
-        //         Active 
-        //         <span class="badge bg-white">2</span>
-        //     </a>
-        //     <a 
-        //         href="?filter_status=inactive"
-        //         type="button" class="btn btn-success"
-        //     >
-        //         Inactive
-        //         <span class="badge bg-white">2</span>
-        //     </a>
-        // ');
         return $xhtml;
     }
 
@@ -66,15 +47,14 @@ class Template {
     }
 
     //function để điều chỉnh giao diện hiển thị theo trạng thái 
-    public static function showItemStatus ($controllerName, $id, $status) {
-        // định nghĩa 1 template dành cho status 
-        $tmplStatus = [
-            'active' => ['name' => 'Kích hoạt', 'class' => 'btn-success'],
-            'inactive' => ['name' => 'Chưa kích hoạt', 'class' => 'btn-info']
-        ];
+    public static function showItemStatus ($controllerName, $id, $statusValue) {
+        // định nghĩa 1 template dành cho status, để sau này khu muốn sửa name hay class ta không cần sửa nhiều nơi nữa, ta sẽ định nghĩa nó trong file config/zvn.php
+        $tmplStatus = Config::get('zvn.template.status');
+        
+        $statusValue = array_key_exists($statusValue, $tmplStatus) ? $statusValue : 'default';
 
-        $curentStatus = $tmplStatus[$status];
-        $link = route($controllerName . '/status', ['status' => $status, 'id' => $id]); // $controllerName này đã được truyền ra từ SliderController nên ta ko cần lo lắng gì nữa
+        $curentTemplateStatus = $tmplStatus[$statusValue]; //sau khi kiểm tra đi cập nhật lại cho $curentTemplateStatus
+        $link = route($controllerName . '/status', ['status' => $statusValue, 'id' => $id]); // $controllerName này đã được truyền ra từ SliderController nên ta ko cần lo lắng gì nữa
 
         $xhtml = sprintf('
             <a href="%s"
@@ -83,7 +63,7 @@ class Template {
             >
                 %s
             </a>
-            ', $link, $curentStatus['class'], $curentStatus['name']  ); //%s đầu tiên sẽ ứng với $by, %s thứ 2 sẽ tương ứng với $time
+            ', $link, $curentTemplateStatus['class'], $curentTemplateStatus['name']); 
         return $xhtml;
     }
 

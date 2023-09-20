@@ -3,7 +3,7 @@
 @extends('admin.main')
 @php 
     use App\Helpers\Template as Template;
-    $xhtmlButtonFilter = Template::showButtonFilter($countByStatus);
+    $xhtmlButtonFilter = Template::showButtonFilter($itemsStatusCount);
 @endphp
 
 {{-- section ta tạo ở đây có tên là content, nó sẽ lấy hết toàn bộ nội dung bên trong quăng vào trong vùng có tên là content ta viết bên file main: @yield('content')  --}}

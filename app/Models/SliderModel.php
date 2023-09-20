@@ -42,7 +42,7 @@ class SliderModel extends Model
         $result = null; 
 
         //params chứa nhưng tham số (có đk) ví dụ như id, options chứa những trạng thái của phần tử, vd như active, inactive,...
-        if($options['task'] == 'admin-count-items'){
+        if($options['task'] == 'admin-count-items-group-by-status'){
             //trong sql ta có câu lệnh để lấy ra status và số phần tử ứng với từng trạng thái như sau: SELECT `status`, COUNT(id) as COUNT FROM `slider` group by `status`;
             $result = self::select(DB::raw('count(id) as count, status'))
             ->groupBy('status')

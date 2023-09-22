@@ -15,23 +15,49 @@ class SliderModel extends Model
     //cấu hình lại tg tạo ra và sửa chữa 
     const CREATED_AT = 'created';
     const UPDATED_AT = 'modified';
+    protected $fieldSearchAccepted = [   // chỉ khi là 1 trong các field dứoi đây mới cho phép search, còn lại thì ko 
+        'id',  
+        'name', 
+        'description', 
+        'link'
+    ];
 
     //xây dựng phương thức lấy ra tất cả các phần tử
     //ta đẩy việc lấy dữ liệu về cho SliderModel giải quyết chứ ko giải quyết ở SliderController 
     public function listItems($params = null, $options = null) {
         $result = null; 
 
+        //có 2 kiểu search, 1: search theo id, 2: search theo 1 tiêu chí vd id / name / description ...
+        echo '<pre style="color:red">';
+        print_r($params);
+        echo '</pre>';
+
         //params chứa nhưng tham số (có đk) ví dụ như id, options chứa những trạng thái của phần tử, vd như active, inactive,...
         if($options['task'] == 'admin-list-items'){
             //$result =  SliderModel::all();
             //chỉ định rõ cột ta cần lấy dữ liẹu chứ không cần lấy hết như bên trên 
-            $result = self::select('id','name','description', 'status', 'link','thumb', 'created', 'created_by', 'modified', 'modified_by')
-                            //->where('id', '>', 3)
-                            ->orderBy('id','desc') // xuất hiện theo id giảm dần
-                            ->paginate($params['pagination']['totalItemsPerPage']); //phân cho trên 1 trang hiển thị số phần tử mà ta mong muốn
-                            //->get(); //self ở đây chính là class SliderModel, cách viết này giúp tối ưu code, sau này có copy code thì cũng chỉ cần sửa class name thôi 
+            $query = $this -> select('id','name','description', 'status', 'link','thumb', 'created', 'created_by', 'modified', 'modified_by');
             //cách viết khác 
             //$result = SliderModel::all('id','name','description');
+
+            //nếu param tồn tại và có giá trị khác all thì tiếp tục gọi đến điều kiện where => chỉ hiển thị những phần tử có trạng thái như ta mong muốn
+            if($params['filter']['status'] !== "all" ){
+                $query->where('status', '=', $params['filter']['status']);
+            }
+
+            if($params['search']['value'] !== "" ){
+      
+                if($params['search']['field'] == "all") {
+
+                } else if(in_array($params['search']['field'], $this->fieldSearchAccepted)) {
+                    echo '<h3 style="color:red"> 123 </h3>';
+                    $query->where($params['search']['field'], 'LIKE', "%{$params['search']['value']}%");
+                }
+            }
+
+
+            $result = $query ->orderBy('id','desc') // xuất hiện theo id giảm dần
+                            ->paginate($params['pagination']['totalItemsPerPage']); //phân cho trên 1 trang hiển thị số phần tử mà ta mong muốn
         }
 
         return $result;

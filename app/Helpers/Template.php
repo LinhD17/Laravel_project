@@ -4,7 +4,7 @@ use Config;
 
 class Template {
     //function xử lý nếu status > 0 thì hiển thị lên nút All, Active, Inactive
-    public static function showButtonFilter ($itemsStatusCount) {
+    public static function showButtonFilter ($controllerName, $itemsStatusCount, $currentFilterStatus) { //$currentFilterStatus - active / inactive / all 
         $xhtml = null;
         $tmplStatus = Config::get('zvn.template.status');
 
@@ -21,19 +21,67 @@ class Template {
                 $statusValue = array_key_exists($statusValue, $tmplStatus) ? $statusValue : 'default'; 
 
                 $curentTemplateStatus = $tmplStatus[$statusValue]; //sau khi kiểm tra đi cập nhật lại cho $curentTemplateStatus
+                $link = route($controllerName) . "?filter_status=" . $statusValue;
 
+                $class = ($currentFilterStatus == $statusValue) ? 'btn-danger' : 'btn-info'; 
                 $xhtml .= sprintf('
                 <a
-                    href="#" type="button"
-                    class="btn btn-primary"
+                    href="%s" type="button"
+                    class="btn %s"
                 >
                     %s
                     <span class="badge bg-white">%s</span>
                 </a>
-                ', $curentTemplateStatus['name'],$item['count']);
+                ', $link, $class, $curentTemplateStatus['name'],$item['count']);
 
             }
         }
+        return $xhtml;
+    }
+
+    //function xử lý và hiển thị phần search 
+    public static function showAreaSearch ($controllerName, $paramsSearch) {
+        $xhtml = null;
+        $tmplField = Config::get('zvn.template.search');
+        $fieldInController = Config::get('zvn.config.search');
+
+        $controllerName = (array_key_exists($controllerName, $fieldInController)) ? $controllerName : 'default';
+        $xhtmlField = null; 
+        
+        foreach($fieldInController[$controllerName] as $field) {
+            $xhtmlField .= sprintf('<li><a href="#" class="select-field" data-field="%s">%s</a></li>', $field, $tmplField[$field]['name']);
+        }
+
+        // echo'<pre style="color:red">'; 
+        // print_r($paramsSearch);
+        // echo'</pre>';
+
+        $searchField = (in_array($paramsSearch['field'], $fieldInController[$controllerName])) ? $paramsSearch['field'] : "all";
+        //$searchField = $paramsSearch['field']; // all id description ...
+
+
+        $xhtml = sprintf('
+            <div class="input-group">
+                    <div class="input-group-btn">
+                        <button type="button"
+                            class="btn btn-default dropdown-toggle btn-active-field"
+                            data-toggle="dropdown" aria-expanded="false"
+                        >
+                            %s <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                            %s
+                        </ul>
+                    </div>
+                    <input type="text"  name="search_value" value="%s" class="form-control">
+                    <input type="hidden" name="search_field" value="all">
+                    <span class="input-group-btn">
+                        <button id="btn-clear-search" type="button" class="btn btn-success" style="margin-right: 0px">Xóa tìm kiếm</button>
+                        <button id="btn-search" type="button" class="btn btn-primary">Tìm kiếm</button>
+                    </span>
+                </div>
+        ', $tmplField[$searchField]['name'], $xhtmlField, $paramsSearch['value']);
+
         return $xhtml;
     }
 
@@ -78,18 +126,10 @@ class Template {
     //fuction chung cho 2 nút edit và delete 
     public static function showButtonAction ($controllerName, $id) {
         //định nghĩa template dàng cho nút 
-        $tmpButton = [
-            'edit' => ['class' => 'btn-success', 'title' => 'Edit', 'icon' => 'fa-pencil', 'route-name' => $controllerName . '/form'], 
-            'delete' => ['class' => 'btn-danger', 'title' => 'Delete', 'icon' => 'fa-trash', 'route-name' => $controllerName. '/delete'],
-            'info' => ['class' => 'btn-info', 'title' => 'View', 'icon' => 'fa-pencil', 'route-name' => $controllerName . '/delete'] //dùng để xem chi tiết 1 slider nào đó 
-        ];
+        $tmpButton = Config::get('zvn.template.button');
 
         //định nghĩa buttonInArea 
-        $buttonInArea = [
-            'default' => ['edit', 'delete'], //mặc định phần quản lý sẽ có nút edit và delete 
-            'slider' => ['edit', 'delete'],
-            'category' => ['edit', 'delete', 'info'],
-        ];
+        $buttonInArea = Config::get('zvn.config.button');
 
         $controllerName = (array_key_exists($controllerName, $buttonInArea)) ? $controllerName : 'default'; 
         $listButtons = $buttonInArea[$controllerName];
@@ -97,7 +137,7 @@ class Template {
         $xhtml = '<div class="zvn-box-btn-filter">';  
         foreach ($listButtons as $btn) {
             $currentButton = $tmpButton[$btn];
-            $link = route($currentButton['route-name'], ['id' => $id]);
+            $link = route($controllerName . $currentButton['route-name'], ['id' => $id]);
             $xhtml .= sprintf('
                 <a
                     href="%s"

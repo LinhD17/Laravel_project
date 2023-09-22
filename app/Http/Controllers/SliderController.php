@@ -20,14 +20,24 @@ class SliderController extends Controller
     {
         $this -> model = new MainModel;
         $this -> params["pagination"]["totalItemsPerPage"] = 3; // hiển thị ra số phần tử trên 1 trang theo yêu cầu của mình chứ ko mặc định
-        View::share('controllerName', $this->controllerName); 
+        //View::share('controllerName', $this->controllerName); 
         // cách ghi khác mà ko cần sử dụng use...View bên trên 
-        //view()->share('controllerName', $this->controllerName);
+        view()->share('controllerName', $this->controllerName);
     }
 
     //trong function này ta đang nói tập tin index (resource/views/admin/pages/index.blade.php chứa toàn bộ giao diện của dự án)
-    public function index()
+    public function index(Request $request)
     {
+        // thông qua phương thức request chúng ta lấy ra được filter hiênj tại 
+        // echo '<h3 style="color: red">' .$request-> input('filter_status', 'all') . '</h3>';  //all, inactive hoặc active
+        $this->params['filter']['status'] = $request-> input('filter_status', 'all');
+        $this->params['search']['field'] = $request-> input('search_field', '');
+        $this->params['search']['value'] = $request-> input('search_value', '');
+
+        // echo '<pre style="color: red">';
+        // print_r($this->params);
+        // '</pre>';
+
         // echo '<h3 style="color: red">' . DB::connection()->getDatabaseName() . '</h3>';   //ở đay mới chỉ trả về project/_laravel, ta chưa biết được nó đã kết nối đứng hay chưa 
 
         // //thử lấy ra tên các table trong DB xem đã kết nối đúng chưa 
@@ -49,6 +59,7 @@ class SliderController extends Controller
         $itemsStatusCount = $this -> model -> countItems($this -> params, ['task' => 'admin-count-items-group-by-status']); // [['status', 'count']]
 
         return view($this->pathViewController . 'index', [
+            'params' => $this->params,
             'items' => $items, 
             'itemsStatusCount' => $itemsStatusCount
             //'controllerName' => $this ->controllerName //truyền giá trị $controllerName ra ngoài view 

@@ -24,29 +24,48 @@ $(document).ready(function() {
     $btnSearch.click(function() {
 
         var pathname = window.location.pathname; // lấy đường dẫn hiện tại 
+        let params = ['filter_status'];
+        let searchParams = new URLSearchParams(window.location.search);
+
+        let link = "";
+        $.each(params, function(key, param) { // param: filter_status
+            if (searchParams.has(param)) {
+                link += param + "=" + searchParams.get(param) + "&" //link: filter_status=active // lấy lại trạng thái hiện tại (active/ inactive/ tất cả) và gắn vào cho link để nó ko bị nhảy về toàn bộ các trạng thái (chỉ hiện the trạng thái mình đang lựa chọn)
+            }
+        });
 
         let search_field = $inputSearchField.val(); // cập nhật khi người dùng click vào ô search by ...
         let search_value = $inputSearchValue.val(); // giá trị mà người dùng nhập vào
 
-        window.location.href = pathname + "?" + 'search_field=' + search_field + '&search_value=' + search_value; //đẩy lên trên url 
-        //window.location.href = pathname + "?" + link + 'search_field=' + search_field + '&search_value=' + search_value.replace(/\s+/g, '+').toLowerCase(); 
+        if (search_value.replace(/\s/g, "") == "") { //replace - xoá bỏ tất cả những khoảng trắng mà nó bằng rỗng -> hiện lên thông báo kêu người dùng nhập vào giá trị cần tìm
+            alert("Nhập vào giá trị cần tìm!!");
+        } else {
+            window.location.href = pathname + "?" + link + 'search_field=' + search_field + '&search_value=' + search_value; //đẩy lên trên url 
+            //window.location.href = pathname + "?" + link + 'search_field=' + search_field + '&search_value=' + search_value.replace(/\s+/g, '+').toLowerCase(); 
+        }
     });
 
-    // $btnClearSearch.click(function() {
-    // 	var pathname	= window.location.pathname;
-    // 	let searchParams= new URLSearchParams(window.location.search);
+    $btnClearSearch.click(function() {
+        var pathname = window.location.pathname;
+        let searchParams = new URLSearchParams(window.location.search);
 
-    // 	params 			= ['page', 'filter_status', 'select_filter'];
+        params = ['filter_status'];
 
-    // 	let link		= "";
-    // 	$.each( params, function( key, value ) {
-    // 		if (searchParams.has(value) ) {
-    // 			link += value + "=" + searchParams.get(value) + "&"
-    // 		}
-    // 	});
+        let link = "";
+        $.each(params, function(key, param) {
+            if (searchParams.has(param)) {
+                link += param + "=" + searchParams.get(param) + "&"
+            }
+        });
 
-    // 	window.location.href = pathname + "?" + link.slice(0,-1);
-    // });
+        window.location.href = pathname + "?" + link.slice(0, -1); //slice() hàm cắt chuỗi, dấu & cuối cùng bị dư thừa ta sẽ xoá nó đi 
+    });
+
+    //hiển thị hộp thoại hỏi người dùng có chắc muốn xoá phần tử đó đi hay không, nếu chắc mới xoá, còn không sẽ dừng quá trình lại¥
+    $('.btn-delete').on('click', function() {
+        if (!confirm('Bạn có chắc muốn xoá phần tử?'))
+            return false;
+    });
 
     // //Event onchange select filter
     // $selectFilter.on('change', function () {

@@ -1,5 +1,6 @@
 @php 
    use App\Helpers\Template as Template;
+   use App\Helpers\Highlight as Highlight;
 @endphp
 
 
@@ -26,9 +27,9 @@
                             $index = $key + 1;
                             $class = ($index %2 == 0) ? "even" : "odd"; 
                             $id = $val['id'];
-                            $name = $val['name'];
-                            $description = $val['description'];
-                            $link = $val['link'];
+                            $name = Highlight::show($val['name'], $params['search'], 'name');
+                            $description = Highlight::show($val['description'], $params['search'], 'description');
+                            $link = Highlight::show($val['link'], $params['search'], 'link');
                             $thumb = Template::showItemThumb($controllerName, $val['thumb'], $val['name']);
                             $status = Template::showItemStatus($controllerName, $id, $val['status']);
                             $createdHistory = Template::showItemHistory($val['created_by'], $val['created']);
@@ -38,9 +39,9 @@
                         <tr class="{{ $class }} pointer">
                             <td class="">{{ $index }}</td>
                             <td width="40%">
-                                <p><strong>Name: </strong> {{ $name }}</p>
-                                <p><strong>Description: </strong> {{ $description }}</p>
-                                <p><strong>Link: </strong> {{ $link }}</p>
+                                <p><strong>Name: </strong> {!! $name !!}</p>
+                                <p><strong>Description: </strong> {!! $description !!}</p>
+                                <p><strong>Link: </strong> {!! $link !!}</p>
                                 <p>{!! $thumb !!}</p>
                             </td>
                             <td>

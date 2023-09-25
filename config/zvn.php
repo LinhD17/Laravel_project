@@ -30,7 +30,7 @@ return [
         ], 
         'button' => [
             'edit' => ['class' => 'btn-success', 'title' => 'Edit', 'icon' => 'fa-pencil', 'route-name' =>  '/form'], 
-            'delete' => ['class' => 'btn-danger', 'title' => 'Delete', 'icon' => 'fa-trash', 'route-name' =>  '/delete'],
+            'delete' => ['class' => 'btn-danger btn-delete', 'title' => 'Delete', 'icon' => 'fa-trash', 'route-name' =>  '/delete'],
             'info' => ['class' => 'btn-info', 'title' => 'View', 'icon' => 'fa-pencil', 'route-name' =>  '/delete'] //dùng để xem chi tiết 1 slider nào đó 
         ]
     ], 
@@ -38,7 +38,7 @@ return [
     'config' => [
         'search' => [
             'default' => ['all', 'id', 'fullname'],
-            'slider' => ['all', 'description', 'link']
+            'slider' => ['all','id', 'name', 'description', 'link']
         ], 
         'button' => [
             'default' => ['edit', 'delete'], //mặc định phần quản lý sẽ có nút edit và delete 

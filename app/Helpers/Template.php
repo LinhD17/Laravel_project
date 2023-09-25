@@ -4,9 +4,13 @@ use Config;
 
 class Template {
     //function xử lý nếu status > 0 thì hiển thị lên nút All, Active, Inactive
-    public static function showButtonFilter ($controllerName, $itemsStatusCount, $currentFilterStatus) { //$currentFilterStatus - active / inactive / all 
+    public static function showButtonFilter ($controllerName, $itemsStatusCount, $currentFilterStatus, $paramsSearch) { //$currentFilterStatus - active / inactive / all 
         $xhtml = null;
         $tmplStatus = Config::get('zvn.template.status');
+
+        // echo '<pre style="color:red">';
+        // print_r($paramsSearch);
+        // echo '</pre>';
 
         if(count($itemsStatusCount) > 0) {
             //thêm phần tử all vào vị trí đầu mảng 
@@ -21,7 +25,12 @@ class Template {
                 $statusValue = array_key_exists($statusValue, $tmplStatus) ? $statusValue : 'default'; 
 
                 $curentTemplateStatus = $tmplStatus[$statusValue]; //sau khi kiểm tra đi cập nhật lại cho $curentTemplateStatus
-                $link = route($controllerName) . "?filter_status=" . $statusValue;
+                $link = route($controllerName) . "?filter_status=" . $statusValue; //link của filter
+
+                //nếu người dùng đang tìm kiếm gì đó, thì gán lại link của filter để giá trị ta đang search ko bị nhảy đi/ reload khi ta bấm vào 1 trong các nút trạng thái
+                if($paramsSearch['value'] !== ''){
+                    $link .= "&search_field=" . $paramsSearch['field'] . "&search_value=" . $paramsSearch['value'];
+                }
 
                 $class = ($currentFilterStatus == $statusValue) ? 'btn-danger' : 'btn-info'; 
                 $xhtml .= sprintf('
@@ -74,13 +83,13 @@ class Template {
                         </ul>
                     </div>
                     <input type="text"  name="search_value" value="%s" class="form-control">
-                    <input type="hidden" name="search_field" value="all">
+                    <input type="hidden" name="search_field" value="%s">
                     <span class="input-group-btn">
                         <button id="btn-clear-search" type="button" class="btn btn-success" style="margin-right: 0px">Xóa tìm kiếm</button>
                         <button id="btn-search" type="button" class="btn btn-primary">Tìm kiếm</button>
                     </span>
                 </div>
-        ', $tmplField[$searchField]['name'], $xhtmlField, $paramsSearch['value']);
+        ', $tmplField[$searchField]['name'], $xhtmlField, $paramsSearch['value'], $searchField);
 
         return $xhtml;
     }

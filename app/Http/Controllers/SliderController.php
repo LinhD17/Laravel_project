@@ -19,7 +19,7 @@ class SliderController extends Controller
     public function __construct()
     {
         $this -> model = new MainModel;
-        $this -> params["pagination"]["totalItemsPerPage"] = 3; // hiển thị ra số phần tử trên 1 trang theo yêu cầu của mình chứ ko mặc định
+        $this -> params["pagination"]["totalItemsPerPage"] = 5; // hiển thị ra số phần tử trên 1 trang theo yêu cầu của mình chứ ko mặc định
         //View::share('controllerName', $this->controllerName); 
         // cách ghi khác mà ko cần sử dụng use...View bên trên 
         view()->share('controllerName', $this->controllerName);
@@ -85,22 +85,23 @@ class SliderController extends Controller
     // phải khai báo use ....request ở trên ta mới có thể sử sử dụng request dưới này để lấy ra id, status...
     public function status(Request $request) 
     {
-        echo '<h3 style="color:red">STATUS: ' . $request->route('status') . '</h3>'; 
-        echo '<h3 style="color:red">ID: ' . $request->route('id') . '</h3>'; 
-        //c2
-        echo '<h3 style="color:red">STATUS: ' . $request->status . '</h3>'; 
-        echo '<h3 style="color:red">ID: ' . $request->id . '</h3>'; 
+        $params["currentStatus"] = $request->status; 
+        $params["id"] = $request->id; 
+        $this->model->saveItem($params, ['task'=>'change-status']);  // $this->model đã có trong phần construct ở trên 
         //return "SliderController - status ";
 
         //phân tích:
             // user -> slider trạng thái hiện => tắt đi => link: http://127.0.0.1:8000/admin123/slider/change-status-active/123
             // vấn đề: từ slider-status làm sao hiện được về trang danh sách list ban đầu
             // sử dụng redirect 
-        return redirect()->route('slider');
+        //return redirect()->route($this -> controllerName);
+        return redirect()->route($this -> controllerName) -> with('zvn_notify', 'Cập nhật trạng thái thành công!'); // with... nhằm mục đích hiển thị câu thông báo đã hoàn thành 1 hành động nào đó 
     }
 
-    public function delete()
+    public function delete(Request $request)
     {        
-        return view($this->pathViewController . 'delete');
+        $params["id"] = $request->id; 
+        $this->model->deleteItem($params, ['task'=>'delete-item']);  
+        return redirect()->route($this -> controllerName) -> with('zvn_notify', 'Xoá phần tử thành công!');
     }
 }

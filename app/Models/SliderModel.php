@@ -48,7 +48,11 @@ class SliderModel extends Model
             if($params['search']['value'] !== "" ){
       
                 if($params['search']['field'] == "all") {
-
+                    $query->where(function($query) use ($params) {
+                        foreach($this->fieldSearchAccepted as $column) {
+                            $query->orWhere($column, 'LIKE', "%{$params['search']['value']}%" );
+                        }
+                    });
                 } else if(in_array($params['search']['field'], $this->fieldSearchAccepted)) {
                     echo '<h3 style="color:red"> 123 </h3>';
                     $query->where($params['search']['field'], 'LIKE', "%{$params['search']['value']}%");
@@ -69,15 +73,50 @@ class SliderModel extends Model
 
         //params chứa nhưng tham số (có đk) ví dụ như id, options chứa những trạng thái của phần tử, vd như active, inactive,...
         if($options['task'] == 'admin-count-items-group-by-status'){
+
             //trong sql ta có câu lệnh để lấy ra status và số phần tử ứng với từng trạng thái như sau: SELECT `status`, COUNT(id) as COUNT FROM `slider` group by `status`;
-            $result = self::select(DB::raw('count(id) as count, status'))
-            ->groupBy('status')
-            ->get()
-            ->toArray();
+            // $result = self::select(DB::raw('count(id) as count, status'))
+            // ->groupBy('status')
+            // ->get()
+            // ->toArray(); 
 
-            //echo '<h3 style="color:red">countItems</h3>'; //countItems
+            $query = $this::groupBy('status')
+                      ->select(DB::raw('status, COUNT(id) as count'));
+
+            if($params['search']['value'] !== "" ){
+      
+                if($params['search']['field'] == "all") {
+                    $query->where(function($query) use ($params) {
+                        foreach($this->fieldSearchAccepted as $column) {
+                            $query->orWhere($column, 'LIKE', "%{$params['search']['value']}%" );
+                        }
+                    });
+                } else if(in_array($params['search']['field'], $this->fieldSearchAccepted)) {
+                    echo '<h3 style="color:red"> 123 </h3>';
+                    $query->where($params['search']['field'], 'LIKE', "%{$params['search']['value']}%");
+                }
+            }
+
+            $result = $query->get()->toArray();
         }
-
         return $result;
     }
+
+    //Xây dựng phương thức saveItem
+    public function saveItem($params = null, $options = null) {
+        // nếu task là change-status thì sẽ tiến hành cập nhật lại trạng thái
+        if($options['task'] == 'change-status') {
+            $status = ($params['currentStatus'] == "active") ? "inactive" : "active"; //nếu status hiện tại là active thì đổi lại thành inactive và ngược lại
+
+            self::where('id', $params['id']) -> update(['status' => $status ]); //  lưu và cập nhật lại trạng thái status thep điều kiện trên
+        }
+    }
+
+    //Xây dựng phương thức deleteItem
+    public function deleteItem($params = null, $options = null) {
+        if($options['task'] == 'delete-item') {
+            self::where('id', $params['id']) -> delete(); 
+        }
+    }
+
 }

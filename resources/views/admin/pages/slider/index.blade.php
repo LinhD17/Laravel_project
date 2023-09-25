@@ -3,7 +3,7 @@
 @extends('admin.main')
 @php 
     use App\Helpers\Template as Template;
-    $xhtmlButtonFilter = Template::showButtonFilter($controllerName, $itemsStatusCount, $params['filter']['status']);
+    $xhtmlButtonFilter = Template::showButtonFilter($controllerName, $itemsStatusCount, $params['filter']['status'], $params['search']);
     $xhtmlAreaSearch  = Template::showAreaSearch($controllerName, $params['search']);
 @endphp
 
@@ -19,6 +19,9 @@
         </a>
    </div>
 </div>
+{{-- hiển thị thông báo (alert) đã hoàn thành cập nhật...  --}}
+@include('admin.template.zvn_notify')
+
 <div class="row">
    <div class="col-md-12 col-sm-12 col-xs-12">
        <div class="x_panel">

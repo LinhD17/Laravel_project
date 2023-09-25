@@ -24,6 +24,9 @@
 
             {{-- custom lại thiết kế của phần phân trang  --}}
             {{ $items -> links('admin.pagination.pagination_backend', ['paginatior' => $items]) }}
+
+            {{-- lấy URL hiện tại appends vào link phân trang để nếu như có bấm vapf trang tiếp theo để xem thì các giá trị đang tìm kiếm cũng bị reload/ xoá đi mất --}}
+            {{-- {!! $items->appends(request()->input())->links('pagination.pagination_backend') !!}  --}}
         </div>
     </div>
 </div>

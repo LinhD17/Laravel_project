@@ -27,10 +27,10 @@ class SliderModel extends Model
     public function listItems($params = null, $options = null) {
         $result = null; 
 
-        //có 2 kiểu search, 1: search theo id, 2: search theo 1 tiêu chí vd id / name / description ...
-        echo '<pre style="color:red">';
-        print_r($params);
-        echo '</pre>';
+        //có 2 kiểu search, 1: search theo all, 2: search theo 1 tiêu chí vd id / name / description ...
+        // echo '<pre style="color:red">';
+        // print_r($params);
+        // echo '</pre>';
 
         //params chứa nhưng tham số (có đk) ví dụ như id, options chứa những trạng thái của phần tử, vd như active, inactive,...
         if($options['task'] == 'admin-list-items'){
@@ -54,7 +54,6 @@ class SliderModel extends Model
                         }
                     });
                 } else if(in_array($params['search']['field'], $this->fieldSearchAccepted)) {
-                    echo '<h3 style="color:red"> 123 </h3>';
                     $query->where($params['search']['field'], 'LIKE', "%{$params['search']['value']}%");
                 }
             }
@@ -92,12 +91,20 @@ class SliderModel extends Model
                         }
                     });
                 } else if(in_array($params['search']['field'], $this->fieldSearchAccepted)) {
-                    echo '<h3 style="color:red"> 123 </h3>';
                     $query->where($params['search']['field'], 'LIKE', "%{$params['search']['value']}%");
                 }
             }
 
             $result = $query->get()->toArray();
+        }
+        return $result;
+    }
+
+    //xây dựng phương thức getItem
+    public function getItem($params = null, $options = null) {
+        $result = null; 
+        if($options['task'] == 'get-item') {
+            $result = self::select('id', 'name','description', 'status', 'link','thumb')-> where('id', $params['id'])->first();
         }
         return $result;
     }

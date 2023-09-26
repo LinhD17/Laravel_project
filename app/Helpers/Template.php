@@ -94,7 +94,7 @@ class Template {
         return $xhtml;
     }
 
-    //function để hiển thị tên người và thời gian tạo- cập nhật
+    //function để hiển thị tên người và thời gian tạo - cập nhật
     public static function showItemHistory ($by, $time) {
         $xhtml = sprintf('
             <p><i class="fa fa-user"></i> %s</p>

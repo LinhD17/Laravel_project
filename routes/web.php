@@ -95,11 +95,14 @@ Route::prefix($prefixAdmin)->group(function () {
             'as' =>  $controllerName, 
             'uses' => $controller . 'index'
         ]);
-
         Route::get('form/{id?}',[
             'as' => $controllerName . '/form', 
             'uses' =>  $controller . 'form'
         ])->where('id', '[0-9]+');
+        Route::post('save',[
+            'as' => $controllerName . '/save', 
+            'uses' =>  $controller . 'save'
+        ]); 
         Route::get('delete/{id}',[
             'as' => $controllerName . '/delete', 
             'uses' =>  $controller . 'delete'

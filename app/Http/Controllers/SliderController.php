@@ -66,20 +66,24 @@ class SliderController extends Controller
         ]); // index là action ta đang làm việc 
     }
 
-    public function form($id = null)
+    public function form(Request $request)
     {
-        // echo '<pre style="color:red">';
-        // print_r($id);    //hàm in ra id mà ta đã truyền vào bên bên => check xem có đúng không 
-        // echo '</pre>';
-
-        $title = "SliderController - form";
+        $item = null;
+        //nếu request gọi đến id khác rỗng thì đây là TH edit, ngược lại thì là TH thêm mới 
+        if ($request->id !== null) {
+            $params["id"] = $request -> id;
+            $item = $this-> model-> getItem($params, ['task' => 'get-item']);
+        }
 
         // cách viết ['id' -> $id] giúp ta truyền id ra form để trong resource/views/admin/slider/form... ta có thể call id này ra được
         return view($this->pathViewController . 'form', [
-            'id' => $id, 
-            'title' => $title, 
-            //'controllerName' => $this ->controllerName //truyền giá trị $controllerName ra ngoài view và đi vào form
+            'item' => $item, 
         ]);
+    }
+
+    public function save(Request $request)
+    {
+            echo '<h3 style="color: red">save</h3>';
     }
 
     // phải khai báo use ....request ở trên ta mới có thể sử sử dụng request dưới này để lấy ra id, status...

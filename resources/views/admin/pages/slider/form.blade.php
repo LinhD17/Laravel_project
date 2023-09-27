@@ -4,16 +4,31 @@
     $formLabelClass = config('zvn.template.form_label.class'); 
     $formInputClass = config('zvn.template.form_input.class'); 
 
+    $statusValue = ['default' => 'Select status', 'active' => config('zvn.template.status.active.name'), 'inactive' => config('zvn.template.status.inactive.name')];
+
     $elements = [
         [
-            'label'   => Form::label('name', 'Name', ['class' => $formLabelClass]),
-            'element' => Form::text('name', $item['name'], ['class' => $formInputClass]) // $item['name'] chính là tên của phần tử hiện tại mà ta muốn edit 
+            'label' => Form::label('name', 'Name', ['class' => $formLabelClass]),
+            'element' =>  Form::text('name', $item['name'], ['class' => $formInputClass]) // $item['name'] chính là tên của phần tử hiện tại mà ta muốn edit 
+        ],  
+        [
+            'label' => Form::label('description', 'Description', ['class' =>  $formLabelClass]), 
+            'element' => Form::text('description', $item['description'], ['class' => $formInputClass])
         ], 
         [
-            'label' => Form::label('description', 'Description', ['class' => $formLabelClass]),
-            'element'     => Form::text('description', $item['description'], ['class' => $formInputClass]) // $item['name'] chính là tên của phần tử hiện tại mà ta muốn edit 
+            'label' => Form::label('status', 'Status', ['class' =>  $formLabelClass]), 
+            'element' => Form::select('status', $statusValue, $item['status'], ['class' => $formInputClass])
         ], 
-    ]
+        [
+            'label' => Form::label('link', 'Link', ['class' =>  $formLabelClass]), 
+            'element' => Form::text('link', $item['link'], ['class' => $formInputClass])
+        ], 
+        // cấu trúc của button không có phần label
+        [
+            'element' => Form::submit('save', ['class' =>  'btn btn-success']), 
+            'type' => "btn-submit"
+        ]
+    ];
 @endphp
 
 {{-- section ta tạo ở đây có tên là content, nó sẽ lấy hết toàn bộ nội dung bên trong quăng vào trong vùng có tên là content ta viết bên file main: @yield('content')  --}}
@@ -26,17 +41,17 @@
         <div class="x_panel">
                 @include('admin.template.x_title', ['title' => 'Form'])
                 <div class="x-content">
-                    {!! Form::open([
+                    {{ Form::open([
                         'method' => 'POST', 
                         'url' => route("$controllerName/save"), 
                         'accept-charset' => 'UTF-8',
                         'enctype' => 'multipart/form-data',
                         'class' => 'form-horizontal form-label-left',
                         'id' => 'main-form'
-                    ]) !!}
-                        {!! FormTemplate::show($elements) !!}
+                        ]) }}
+                        {!! FormTemplate::show($elements)!!}
 
-                    {!! Form::close() !!} 
+                    {{ Form::close() }}
                 </div>
 
                 {{-- <form method="POST" action="http://proj_news.xyz/admin123/slider/save" accept-charset="UTF-8" enctype="multipart/form-data" class="form-horizontal form-label-left" id="main-form">
